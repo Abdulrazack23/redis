@@ -14,10 +14,14 @@ async def startuo_event():
 async def shutdown_event():
     app.state.redis.close()
 
-@app.get('entries')
+@app.get('/entries')
 async def read_item():
     value =app.state.redis.get('entries')
     if value is None:
        response =await app.state.http_client.get('https://api.publicapis.org/enttries')
-       return response.json()
+       value= response.json()
+       data_str =json.dumps(value)
+       app.state.redis.set("entries",data_str)
+       
+    
 
